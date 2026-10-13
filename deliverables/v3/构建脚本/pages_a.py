@@ -39,7 +39,7 @@ def p01(D, ctx):
         text(ctx, sl, ML, y, L7w, [P('第940医院检验科　·　2026年　月　日')], 16, color='C9D3DF')
         footer(sl, ctx.page, dark=True)
     sz = fit(ctx, sl, draw, [48])
-    ctx.L(template='T1 主视觉页', orig='原P1', size=f'主标题{sz}pt（原48pt）',
+    ctx.L(template='T1 主视觉页', orig='原P1', size=f'主标题{sz}pt（原48pt）', images='01_1',
           added=['主视觉新图 01_1', '副标题「WS/T 407-2012 & CNAS-GL047:2021 解读与我科应用」', '科室与日期行（日期留空待填）'],
           pending=['讲课日期【待填】'])
 
@@ -93,7 +93,7 @@ def p03(D, ctx):
             g = group(sl.shapes, 'CHAPTERBAR')
             rrect(g.shapes, cx, cy, bw, bh, fill=C['BOX'], line=C['SLATE'])
             textbox(g.shapes, cx + 0.15, cy + 0.06, bw - 0.3, bh - 0.12, [c], sz, mode=ctx.mode)
-        bx = ML + sum(char_w(c, 28, True) for c in ptext(D.T(3, 13, 0))) / 72 + 0.4
+        bx = title_end(D.T(3, 13))
         head_badges(ctx, sl, bx, Y_TITLE + 0.13, [(D.T(3, 26, 0)[0]['t'] + D.T(3, 26, 0)[1]['t'] + D.T(3, 26, 0)[2]['t'] + D.T(3, 26, 0)[3]['t'], C['SLATE'], True),
                                       ('2022-03-01施行', C['ORANGE'], True)], limit=CB_R)
         ctx.chk(y + 3 * bh + 2 * 0.08, CB_R)
@@ -155,7 +155,7 @@ def p04(D, ctx):
         else:
             ctx.L(images='04_1c')
     sz = fit(ctx, sl, draw, SIZES(20), ('std', 'wide'))
-    ctx.L(template='T2 条文页（纵向时间轴）' + ('；宽版：为保住原20pt字号，时间轴改为通栏两列，示例图移至标题行角图位' if ctx.variant == 'wide' else ''),
+    ctx.L(template='T2 条文页（纵向时间轴）' + ('；宽版：为保字号，时间轴改为通栏两列，示例图移至标题行角图位' if ctx.variant == 'wide' else ''),
           orig='原P4（上半：2006–2010）', size=f'正文{sz}pt（原20pt）',
           added=['每个文号一个节点，节点内容放入条文框，引用写对应文号', '新图 04_1'],
           pending=['卫办医发〔2006〕32号的标题与成文日期', '「卫办医改发」还是「卫办医政发」〔2010〕108号'])
@@ -318,7 +318,7 @@ def law_page(D, ctx, page, on, title_id, arts, pics, newimg, warn, extra=None, s
         return yb
 
     def warn_title():
-        x0 = ML + sum(char_w(c, 28, True) for c in ptext(D.T(on, title_id, 0))) / 72 + 0.45
+        x0 = title_end(D.T(on, title_id))
         x1 = SW - MR - CORNER_W - GUT
         g = group(sl.shapes, 'WARN')
         rrect(g.shapes, x0, Y_TITLE - 0.02, x1 - x0, 0.62, fill=C['RED'], line=C['RED'])
@@ -329,8 +329,9 @@ def law_page(D, ctx, page, on, title_id, arts, pics, newimg, warn, extra=None, s
         boxes = mk_boxes(sz)
         warn_title()
         corner = True
-        cimg = None if (v != 'cols2' and not pics) else img(newimg + ('' if pics else 'c'))
+        cimg = None if (not v.startswith('cols2') and not pics) else img(newimg + ('' if pics else 'c'))
         frame(sl, D.T(on, title_id), 1, page, '来源：原PPT', 'REG', mode=ctx.mode, corner=cimg)
+        if cimg: ctx.L(images=newimg + ('' if pics else 'c'))
         if v in ('std', 'wide'):
             tw, sx = (L8w, R4x) if v == 'std' else (span(9), colx(9))
             sw = SW - MR - sx
@@ -361,7 +362,6 @@ def law_page(D, ctx, page, on, title_id, arts, pics, newimg, warn, extra=None, s
             if pics:
                 y = pics_block(x, y, cw1, 2.0, row=True) + GUT
             ctx.chk(y - GUT, CB_R)
-            ctx.L(images=newimg + ('' if pics else 'c'))
     sz = fit(ctx, sl, draw, sizes or SIZES(18), ('std', 'wide', 'cols2', 'cols2a', 'cols2b'))
     return sz
 
@@ -629,12 +629,17 @@ def p17(D, ctx):
             setcell(tb.cell(i, 2), b, sz, C['TEXT'])
             setcell(tb.cell(i, 3), s, sz, C['WHITE'], True, C['ORANGE'] if s == '≠' else C['GREEN'])
             tb.cell(i, 3).text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
-        # 「适用」「方法」两行橙色细框
-        yy = CT + head_h
-        for i, h in enumerate(hh):
-            if rows[i][0] in ('适用', '方法'):
-                rrect(sl.shapes, X0 - 0.03, yy, FW + 0.06, h, fill=None, line=C['ORANGE'], lw=1.5, radius=0.02, name='HILITE')
-            yy += h
+        # 「适用」「方法」两行橙色细框：直接设置这两行单元格的上下边框（及首尾列外框）
+        for i, r in enumerate(rows, 1):
+            if r[0] in ('适用', '方法'):
+                for j in range(4):
+                    tcPr = tb.cell(i, j)._tc.get_or_add_tcPr()
+                    sides = ['a:lnT', 'a:lnB'] + (['a:lnL'] if j == 0 else []) + (['a:lnR'] if j == 3 else [])
+                    for side in sides:
+                        for e in tcPr.findall(qn(side)): tcPr.remove(e)
+                        ln = etree.Element(qn(side)); ln.set('w', str(int(Pt(1.75)))); ln.set('cmpd', 'sng')
+                        sf = etree.SubElement(ln, qn('a:solidFill')); etree.SubElement(sf, qn('a:srgbClr')).set('val', C['ORANGE'])
+                        tcPr.insert(0, ln)
     sz = fit(ctx, sl, draw, SIZES(16))
     ctx.L(template='T6 表格页', orig='新增页（全片核心页）', size=f'表格{sz}pt',
           added=['原生表格（表头WS青绿/GL藏青），每行最右「≠/=」徽章格', '「适用」「方法」两行橙色细框', '角图 17_1'],

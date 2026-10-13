@@ -73,7 +73,7 @@ def p19(D, ctx):
         return [QB(J(D.T(14, 3, 0), ana), 'GL', cg), QB(J(D.T(14, 10, 0), mea), 'GL', cg), QB(J(D.T(14, 14, 0), pro), 'GL', cg),
                 QB(J(D.T(14, 19, 0), D.T(14, 20, 0)), 'GL', cg), QB(J(D.T(14, 22, 0), com, C['TEAL']), 'WS', '—— WS/T 407 3.1')]
     def decomp(ctx, sl):
-        x = ML + sum(char_w(c, 28, True) for c in '术语和定义') / 72 + 0.5
+        x = title_end(D.T(14, 18))
         y = Y_TITLE + 0.08
         textbox(sl.shapes, x, y + 0.03, 2.6, 0.3, [P('“24h 尿蛋白质质量”拆解：')], 14, color=C['NAVY'], bold=True, pitch=1.2)
         x += 2.65
@@ -99,7 +99,7 @@ def p20(D, ctx):
                 QB([D.T(15, 17, 0)], 'REG', '—— 原PPT补充'), QB([D.T(15, 19, 0)], 'REG', '—— 原PPT补充')]
     def notebox(ctx, sl):
         note = [P(P('【需主任确认是否上屏】', bold=True, color=C['ORANGE'])[0], 'LoD–LoQ（2.6–3.3 μg/L）之间的结果报告方式需补充；检出限与定量限的现行文件为 CLSI EP17-A2（2012）')]
-        x0 = ML + sum(char_w(c, 28, True) for c in '术语和定义') / 72 + 0.5
+        x0 = title_end(D.T(15, 22))
         x1 = SW - MR - CORNER_W - GUT
         gg = group(sl.shapes, 'NOTE')
         rrect(gg.shapes, x0, Y_TITLE - 0.06, x1 - x0, 0.72, fill='FDF1E8', line=C['ORANGE'])
@@ -247,11 +247,11 @@ def p25(D, ctx):
     sl = D.orig(19); ctx.page = ctx.pg
     def blocks(sz):
         p1 = replace(D.T(19, 2, 0), '另外如果基于检测系统不精密度建立的标准高于临床要求，可根据临床需求适当调整可接受标准',
-                     '反之，如果基于检测系统不精密度建立的标准高于临床要求，实验室负责人可根据临床需要适当调整可接受标准', 'WS/T 407 6.7.1', 'B6', 24)
+                     '反之，如果基于检测系统不精密度建立的标准高于临床要求，实验室负责人可根据临床需要适当调整可接受标准', 'WS/T 407 6.7.1', 'B6', ctx.page)
         p2 = D.T(19, 2, 1)
         p2 = replace(p2, '③依据生物学变异确定的分析质量要求，允许差异为个体内生物学变异（CV)的1/3',
                      '③依据生物学变异确定的分析质量要求（注：对于精密度检测结果符合要求的检测系统，同一检测项目可比性结果的允许差异为个体内生物学变异（CV)的1/3）',
-                     'WS/T 407 6.7.2 c)', 'A1', 24)
+                     'WS/T 407 6.7.2 c)', 'A1', ctx.page)
         p2 = replace(p2, '按以下优先顺序', '按以下优选顺序', 'WS/T 407 6.7.2', 'B7', ctx.page)
         p2 = replace(p2, '医疗机构内医师的临床经验', '医疗机构内医生的临床经验', 'WS/T 407 6.7.2', 'B7', ctx.page)
         ot = orig_text(p2)
@@ -330,26 +330,23 @@ def p27(D, ctx):
         ch = max(card_h([H(D.T(21, a, 0)), D.T(21, b, 0)], cw, sz, ih) for a, b in cards) + 0.22
         for k, (a, b) in enumerate(cards):
             x = X0 + k * (cw + GUT)
-            card(ctx, sl, x, CT, cw, ch, f'26_1-{k+1}', [H(D.T(21, a, 0)), D.T(21, b, 0)], sz, icon_h=ih, line=C['NAVY'])
-            textbox(sl.shapes, x + cw - PAD - cite_w(cg), CT + ch - 0.30, cite_w(cg), 0.22, [P(cg)], 12, color=C['NAVY'], align='r', pitch=1.2)
+            card(ctx, sl, x, CT, cw, ch, f'26_1-{k+1}', [H(D.T(21, a, 0)), D.T(21, b, 0)], sz, icon_h=ih, line=C['NAVY'], cite=cg)
         y = CT + ch + GUT
         # 6.4 宽卡（左9栏）：原文（A2、A3替换）＋左右对照
         p = D.T(21, 22, 0)
         p = replace(p, '应首选患者样本', '应使用患者样本', 'CNAS-GL047 6.4', 'A2', ctx.page)
         p = replace(p, '也可用室间质评物或其他参考物质，应验证互通性。',
                     '宜使用临床标本作为首选比对物质；不得不使用其他物质（如室间质评物或其他参考物质）时，应验证比对物质的互通性。（WS/T 407 6.3.1）',
-                    'WS/T 407 6.3.1', 'A3', 26)
+                    'WS/T 407 6.3.1', 'A3', ctx.page)
         ww = span(9)
         body = [H(D.T(21, 20, 0)), p]
-        h = qb(ctx, sl, X0, y, ww, body, sz, 'GL', '—— CNAS-GL047 6.4')
-        picture(sl.shapes, img('26_1-4'), X0 + ww - PAD - 0.32, y + PAD - 0.04, 0.3, 0.3, rounded=False, name='NEWIMG_ICON')
+        h = qb(ctx, sl, X0, y, ww, body, sz, 'GL', '—— CNAS-GL047 6.4', icon=(img('26_1-4'), 0.3))
         xr = colx(9); wr = span(3)
         c5 = [H(D.T(21, 24, 0)), D.T(21, 26, 0)]
         h5 = card_h(c5, wr, sz, 0.45) + 0.22
-        card(ctx, sl, xr, y, wr, h5, '26_1-5', c5, sz, icon_h=0.45, line=C['NAVY'], limit=CB_R)
-        textbox(sl.shapes, xr + wr - PAD - cite_w(cg), y + h5 - 0.30, cite_w(cg), 0.22, [P(cg)], 12, color=C['NAVY'], align='r', pitch=1.2)
+        card(ctx, sl, xr, y, wr, h5, '26_1-5', c5, sz, icon_h=0.45, line=C['NAVY'], limit=CB_R, cite=cg)
         # 6.4 对照条放标题行（卡内与卡下均放不下）
-        x0 = ML + sum(char_w(c, 28, True) for c in ptext(D.T(21, 4, 0))) / 72 + 0.45
+        x0 = title_end(D.T(21, 4))
         x1 = SW - MR - CORNER_W - GUT
         ws_t = 'WS/T 407：宜首选临床标本；不得不用其他物质时验证互通性'
         gl_t = 'GL047：应使用患者样本'

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+<defs>
+ <linearGradient id="bgW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9EDF2"/></linearGradient>
+ <radialGradient id="bgN" cx="0.5" cy="0.45" r="0.75"><stop offset="0" stop-color="#2A4A73"/><stop offset="0.6" stop-color="#1F3A5F"/><stop offset="1" stop-color="#132740"/></radialGradient>
+ <linearGradient id="cer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.55" stop-color="#F1F3F6"/><stop offset="1" stop-color="#D9DFE6"/></linearGradient>
+ <linearGradient id="cerS" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E3E8EE"/><stop offset="0.5" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCE2E9"/></linearGradient>
+ <linearGradient id="nav" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#34598A"/><stop offset="1" stop-color="#1A3354"/></linearGradient>
+ <linearGradient id="tea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2BB9B1"/><stop offset="1" stop-color="#11807B"/></linearGradient>
+ <linearGradient id="ora" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3A266"/><stop offset="1" stop-color="#D9702A"/></linearGradient>
+ <linearGradient id="grn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4CC07C"/><stop offset="1" stop-color="#25854C"/></linearGradient>
+ <linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E05A4B"/><stop offset="1" stop-color="#A93226"/></linearGradient>
+ <linearGradient id="gls" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.85"/><stop offset="1" stop-color="#D6EEEC" stop-opacity="0.45"/></linearGradient>
+ <linearGradient id="glsN" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30"/><stop offset="1" stop-color="#9FD9D5" stop-opacity="0.12"/></linearGradient>
+ <linearGradient id="scr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22405F"/><stop offset="1" stop-color="#0F2236"/></linearGradient>
+ <linearGradient id="grey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E4E7EB"/><stop offset="1" stop-color="#C3C9D1"/></linearGradient>
+ <linearGradient id="beamV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FF0E8" stop-opacity="0"/><stop offset="0.5" stop-color="#7FF0E8" stop-opacity="0.9"/><stop offset="1" stop-color="#7FF0E8" stop-opacity="0"/></linearGradient>
+ <linearGradient id="beamH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3FD3CB" stop-opacity="0.15"/><stop offset="0.5" stop-color="#7FF0E8" stop-opacity="1"/><stop offset="1" stop-color="#3FD3CB" stop-opacity="0.15"/></linearGradient>
+ <filter id="sh" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+ <filter id="sh2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+ <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+ <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="22"/></filter>
+</defs><rect width="800" height="500" fill="url(#bgW)"/><rect x="0" y="440" width="800" height="60" fill="#E1E6EC" opacity="0.6"/><ellipse cx="400.0" cy="440" rx="143.0" ry="20.020000000000003" fill="#0B1B2E" opacity="0.28" filter="url(#sh)"/><path d="M310.3,68 h13.0 v68.5 l-6.5,-7.8 l-6.5,7.8 z" fill="url(#tea)"/><path d="M343.58000000000004,68 h13.0 v98.5 l-6.5,-7.8 l-6.5,7.8 z" fill="url(#nav)"/><path d="M376.86,68 h13.0 v138.5 l-6.5,-7.8 l-6.5,7.8 z" fill="url(#ora)"/><path d="M410.14,68 h13.0 v78.5 l-6.5,-7.8 l-6.5,7.8 z" fill="url(#tea)"/><path d="M443.42,68 h13.0 v113.5 l-6.5,-7.8 l-6.5,7.8 z" fill="url(#nav)"/><path d="M476.70000000000005,68 h13.0 v58.5 l-6.5,-7.8 l-6.5,7.8 z" fill="url(#tea)"/><rect x="270" y="70" width="260" height="370" rx="10.4" fill="url(#nav)" opacity="1" /><rect x="285.6" y="77.4" width="7.8" height="355.2" rx="2" fill="#FFFFFF" opacity="0.18" /><rect x="322.0" y="136.6" width="156.0" height="81.4" rx="7.8" fill="#FFFFFF" opacity="0.12" /><rect x="322.0" y="373.4" width="156.0" height="4.44" rx="2" fill="#FFFFFF" opacity="0.35" /></svg>

@@ -14,33 +14,33 @@ def step_boxes(D, ctx, ks):
     """原P27 七个步骤（含 A4–A6、B9–B11 替换）。"""
     ps = D.T(27, 3)
     pg = ctx.page
-    out = {}
+    out = {k: ps[k] for k in range(7)}
     p = ps[0]
-    p = replace(p, '监测数据估计不精密度，尽可能使用6个月的数据', '检测数据估计不精密度，尽可能使用累计6个月的检测数据', 'WS/T 407 6.4.1', 'B9', pg)
-    p = insert(p, '如大于2倍', '如小于2倍，可使用本指南规定的比对方案；', 'WS/T 407 6.4.2', 'B9', pg)
-    p = replace(p, 'CLSIEP9-A2', 'CLSI EP9-A2', 'WS/T 407 6.4.2', 'B9', pg)
-    p = replace(p, '确认检测系统的性能符合要求', '确认检测系统间的结果可比性', 'WS/T 407 6.4.2', 'A4', pg)
-    out[0] = p
-    out[1] = ps[1]
-    out[2] = replace(ps[2], '使用计算合并CV值确定每台仪器', '使用计算合并CV值查找附录A的表A.1，以确定每台仪器', 'WS/T 407 6.6', 'B10', pg)
-    out[3] = ps[3]
-    p = ps[4]
-    ot = orig_text(p)
-    first = ot.find(']X100%')
-    p = replace(p, ']X100%', ']×100%', 'WS/T 407 6.8.4', 'B11', pg)
-    # 第二处：在第一处之后
-    from lib import cut_i
-    ot2 = orig_text(p); j = ot2.find(']X100%', first + 1)
-    a, b = cut_i(p, 0, j), cut_i(p, j, len(ot2))
-    p = a + replace(b, ']X100%', ']×100%', 'WS/T 407 6.8.4', 'B11', pg)
-    out[4] = p
-    out[5] = ps[5]
-    p = ps[6]
-    p = replace(p, '如比对偏差大于或等于分析质量要求', '如比对偏差大于分析质量要求', 'WS/T 407 6.8.5 b)', 'A5', pg)
-    p = replace(p, '均值最大的两个系统间可比性不符合要求，剔除偏差较大检测系统的结果后再比',
-                '均值差异最大的两个检测系统间的可比性不符合要求，将两个检测系统的结果分别与规范操作检测系统的结果进行比较，剔除偏差较大检测系统的结果后再比',
-                'WS/T 407 6.8.5 b)', 'A6', pg)
-    out[6] = p
+    if 0 in ks:
+      p = replace(p, '监测数据估计不精密度，尽可能使用6个月的数据', '检测数据估计不精密度，尽可能使用累计6个月的检测数据', 'WS/T 407 6.4.1', 'B9', pg)
+      p = insert(p, '如大于2倍', '如小于2倍，可使用本指南规定的比对方案；', 'WS/T 407 6.4.2', 'B9', pg)
+      p = replace(p, 'CLSIEP9-A2', 'CLSI EP9-A2', 'WS/T 407 6.4.2', 'B9', pg)
+      p = replace(p, '确认检测系统的性能符合要求', '确认检测系统间的结果可比性', 'WS/T 407 6.4.2', 'A4', pg)
+      out[0] = p
+    if 2 in ks:
+      out[2] = replace(ps[2], '使用计算合并CV值确定每台仪器', '使用计算合并CV值查找附录A的表A.1，以确定每台仪器', 'WS/T 407 6.6', 'B10', pg)
+    if 4 in ks:
+      p = ps[4]
+      ot = orig_text(p)
+      first = ot.find(']X100%')
+      p = replace(p, ']X100%', ']×100%', 'WS/T 407 6.8.4', 'B11', pg)
+      from lib import cut_i
+      ot2 = orig_text(p); j = ot2.find(']X100%', first + 1)
+      a, b = cut_i(p, 0, j), cut_i(p, j, len(ot2))
+      p = a + replace(b, ']X100%', ']×100%', 'WS/T 407 6.8.4', 'B11', pg)
+      out[4] = p
+    if 6 in ks:
+      p = ps[6]
+      p = replace(p, '如比对偏差大于或等于分析质量要求', '如比对偏差大于分析质量要求', 'WS/T 407 6.8.5 b)', 'A5', pg)
+      p = replace(p, '均值最大的两个系统间可比性不符合要求，剔除偏差较大检测系统的结果后再比',
+                  '均值差异最大的两个检测系统间的可比性不符合要求，将两个检测系统的结果分别与规范操作检测系统的结果进行比较，剔除偏差较大检测系统的结果后再比',
+                  'WS/T 407 6.8.5 b)', 'A6', pg)
+      out[6] = p
     cites = {0: '—— WS/T 407 6.4', 1: '—— WS/T 407 6.5', 2: '—— WS/T 407 6.6', 3: '—— WS/T 407 6.8.2–6.8.3', 4: '—— WS/T 407 6.8.4', 5: '—— WS/T 407 6.8.5', 6: '—— WS/T 407 6.8.5'}
     return [QB([out[k]], 'WS', cites[k]) for k in ks]
 
@@ -141,9 +141,9 @@ def p36(D, ctx):
             bx0, bx1 = R5x + 1.0, R5x + R5w - 0.2
             rrect(gg.shapes, bx0, yy + 0.16, bx1 - bx0, 0.2, fill='D6EEEC', line=C['TEAL'], radius=0.03)
             line(gg, (bx0 + bx1) / 2, yy + 0.1, (bx0 + bx1) / 2, yy + 0.42, C['ORANGE'], 2)
-            textbox(gg.shapes, bx0 - 0.3, yy + 0.44, 0.9, 0.28, [P(f'{lo}')], 12, color=C['TEAL'], pitch=1.1, align='ctr')
-            textbox(gg.shapes, (bx0 + bx1) / 2 - 0.5, yy + 0.44, 1.0, 0.28, [P(f'{m}')], 12, color=C['ORANGE'], pitch=1.1, align='ctr', bold=True)
-            textbox(gg.shapes, bx1 - 0.6, yy + 0.44, 0.9, 0.28, [P(f'{hi} U/L')], 12, color=C['TEAL'], pitch=1.1, align='ctr')
+            textbox(gg.shapes, bx0 - 0.25, yy + 0.42, 0.9, 0.26, [P(f'{lo}')], 12, color=C['TEAL'], pitch=1.1, align='ctr')
+            textbox(gg.shapes, (bx0 + bx1) / 2 - 0.5, yy + 0.42, 1.0, 0.26, [P(f'{m}')], 12, color=C['ORANGE'], pitch=1.1, align='ctr', bold=True)
+            textbox(gg.shapes, bx1 - 0.85, yy + 0.42, 0.95, 0.26, [P(f'{hi} U/L')], 12, color=C['TEAL'], pitch=1.1, align='r')
             yy += 0.74 + 0.1
         yy += GUT - 0.1
         yy += bignum(sl.shapes, R5x, yy, R5w, '6% = CVI 18.0% × 1/3', '分析质量要求', cite='—— WS/T 407 B.1.2–B.1.3', nsz=32) + GUT

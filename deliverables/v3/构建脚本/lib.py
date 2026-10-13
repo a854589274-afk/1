@@ -31,6 +31,7 @@ CB_R = Y_BADGE - GUT           # 右侧栏（与徽章同列）内容底
 CB_L = 6.62                    # 左侧栏内容底（徽章不在其下方）
 Y_FOOT, H_FOOT = 6.82, 0.23
 CORNER_W, CORNER_H = 1.6, 1.0
+BADGE_X = SW
 
 C = dict(NAVY='1F3A5F', TEAL='148F8A', SLATE='5B6B7F', ORANGE='E8833A', RED='C0392B',
          GREEN='2E9E5B', BOX='F3F5F7', TEXT='222222', GRAY='6B7280', LGRAY='D5DAE0',
@@ -199,7 +200,7 @@ def replace(para, old, new, basis, code, label=''):
         else:
             out.append(s)
         pos += L
-    REPLOG.append((label, code, old, new, basis))
+    REPLOG.append((label, code, old, new, basis, ''))
     return out
 
 def insert(para, before, text, basis, code, label=''):
@@ -220,7 +221,7 @@ def insert(para, before, text, basis, code, label=''):
         out.append(s)
         pos += L
     assert done, code
-    REPLOG.append((label, code, '', text, basis))
+    REPLOG.append((label, code, '', text, basis, before))
     return out
 
 def cut(para, a=None, b=None):
@@ -376,7 +377,7 @@ def quote_box_h(paras, w, sz, cite=True, quote=True, gap=4, citetext=None):
     return 2 * PAD + th + (0.24 * clines if cite and not inline else 0)
 
 def quote_box(shapes, x, y, w, paras, sz, src='GL', cite=None, mode='clean', h=None, quote=True,
-              gap=4, label=None, fill=C['BOX'], tags=None):
+              gap=4, label=None, fill=C['BOX'], tags=None, icon=None):
     """条文框：浅灰底，四边来源色 0.75pt，圆角 0.08"，左上大引号，右下引用行。"""
     need = quote_box_h(paras, w, sz, cite is not None, quote, gap, cite)
     inline = quote_box_h.inline
@@ -389,6 +390,10 @@ def quote_box(shapes, x, y, w, paras, sz, src='GL', cite=None, mode='clean', h=N
     if quote:
         textbox(g.shapes, x + PAD - 0.04, y + PAD - 0.10, QGUT, 0.42, [P('“')], 24, color=col, bold=True, pitch=1.0)
     th = h - 2 * PAD - (0.24 * clines if cite and not inline else 0)
+    if icon:                                   # 框内右上角小图标（同组内）
+        ip, isz = icon
+        pic = g.shapes.add_picture(ip, Emu(int((x + w - PAD - isz) * EMU)), Emu(int((y + PAD - 0.04) * EMU)), Emu(int(isz * EMU)), Emu(int(isz * EMU)))
+        pic.name = 'NEWIMG_ICON'
     if tags:                                   # 框头右侧标签（同组内）
         tx2 = x + w - PAD
         for t, tcol in reversed(tags):
@@ -477,15 +482,28 @@ def frame(slide, title_paras, chap, page, src_text=None, src_key='GL', corner=No
           title_w=None, dark=False):
     sh = slide.shapes
     fg = C['WHITE'] if dark else C['NAVY']
-    textbox(sh, ML, Y_CHAP, 4, H_CHAP, [P(CHAPTERS[chap])], 12, color=C['WHITE'] if dark else C['TEAL'], bold=True, pitch=1.2, name='CHAPTER')
+    textbox(sh, ML, Y_CHAP, 1.6, H_CHAP, [P(CHAPTERS[chap])], 12, color=C['WHITE'] if dark else C['TEAL'], bold=True, pitch=1.2, name='CHAPTER')
     tw = title_w or (SW - ML - MR - (CORNER_W + GUT if corner else 0))
+    tw = min(tw, title_need(title_paras))
     textbox(sh, ML, Y_TITLE, tw, H_TITLE, title_paras, 28, mode=mode, color=fg, bold=True, pitch=1.15, name='TITLE')
     if corner:
         picture(sh, corner, SW - MR - CORNER_W, MT, CORNER_W, CORNER_H, name='NEWIMG_CORNER')
     footer(slide, page, dark)
+    global BADGE_X
+    BADGE_X = SW
     if src_text:
         w = badge_w(src_text)
+        BADGE_X = SW - MR - w
         badge(sh, SW - MR - w, Y_BADGE, src_text, SRC.get(src_key, src_key), w=w, h=H_BADGE, fill=False, name='SRCBADGE')
+
+def title_need(title_paras):
+    return sum(char_w(c, 28, True) for c in ''.join(ptext(p if not isinstance(p, dict) else p['segs'], 'annot') for p in title_paras)) * 1.04 / 72 + 0.25
+
+
+def title_end(title_paras, gap=0.25):
+    """标题行内其它元素的起点（标题实际宽度之后）。"""
+    return ML + title_need(title_paras) + gap
+
 
 def footer(slide, page, dark=False):
     sh = slide.shapes

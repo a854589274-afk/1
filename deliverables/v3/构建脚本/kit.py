@@ -31,15 +31,17 @@ class Ctx:
 def fit(ctx, sl, fn, sizes, variants=None):
     """依次尝试字号（原字号优先，逐级下调，不低于14pt）；给出 variants 时，同一字号下先试标准版式、再试宽版式。
     返回采用的字号（及版式变体存入 ctx.variant）。"""
-    for sz in sizes:
-        for v in (variants or [None]):
-            clear_slide(sl)
-            ctx.over = 0.0
-            ctx.variant = v
-            mark = len(REPLOG)
-            fn(sz, v) if variants else fn(sz)
-            if ctx.over <= 0.005:
-                return sz
+    combos = [(sz, v) for sz in sizes for v in (variants or [None])]
+    for idx, (sz, v) in enumerate(combos):
+        clear_slide(sl)
+        ctx.over = 0.0
+        ctx.variant = v
+        ctx.notes.setdefault(ctx.page, dict(template='', added=[], pending=[], orig='', size='', images=[]))['images'] = []
+        mark = len(REPLOG)
+        fn(sz, v) if variants else fn(sz)
+        if ctx.over <= 0.005:
+            return sz
+        if idx < len(combos) - 1:
             del REPLOG[mark:]
     print(f'  !! 第{ctx.page}页 14pt 仍越界 {ctx.over:.2f} 英寸 @ {ctx.over_src}')
     ctx.L(pending='【版式】自动定字号到下限仍越界 %.2f 英寸' % ctx.over)
@@ -62,8 +64,14 @@ def bold_head(para, head):
     return out
 
 
-def qb(ctx, sl, x, y, w, paras, sz, src='GL', cite=None, h=None, limit=CB_L, quote=True, gap=4, fill=C['BOX'], tags=None):
-    hh = quote_box(sl.shapes, x, y, w, paras, sz, src=src, cite=cite, mode=ctx.mode, h=h, quote=quote, gap=gap, fill=fill, tags=tags)
+def _lim(x, w, limit):
+    import lib
+    return min(limit, CB_R) if x + w > lib.BADGE_X - 0.02 else limit
+
+
+def qb(ctx, sl, x, y, w, paras, sz, src='GL', cite=None, h=None, limit=CB_L, quote=True, gap=4, fill=C['BOX'], tags=None, icon=None):
+    limit = _lim(x, w, limit)
+    hh = quote_box(sl.shapes, x, y, w, paras, sz, src=src, cite=cite, mode=ctx.mode, h=h, quote=quote, gap=gap, fill=fill, tags=tags, icon=icon)
     ctx.chk(y + hh, limit)
     return hh
 
@@ -97,6 +105,7 @@ def mid_badge(sl, cx, cy, sym, col, w=0.46, h=0.30):
 
 
 def text(ctx, sl, x, y, w, paras, sz, color=C['TEXT'], bold=False, align='l', limit=CB_L, pitch=PITCH, gap=4, force=False):
+    limit = _lim(x, w, limit)
     mp = [dict(segs=meas_para(p['segs'] if isinstance(p, dict) else p), size=(p.get('size', sz) if isinstance(p, dict) else sz)) for p in paras]
     h = text_height_in(mp, w, sz, gap, pitch) + 0.02
     textbox(sl.shapes, x, y, w, h, paras, sz, mode=ctx.mode, color=color, bold=bold, align=align, pitch=pitch, gap=gap, force=force)
@@ -104,9 +113,12 @@ def text(ctx, sl, x, y, w, paras, sz, color=C['TEXT'], bold=False, align='l', li
     return h
 
 
-def card(ctx, sl, x, y, w, h, icon, paras, sz, color=C['TEXT'], line=C['LGRAY'], icon_h=1.0, limit=CB_L, bold=False, fill=C['WHITE']):
+def card(ctx, sl, x, y, w, h, icon, paras, sz, color=C['TEXT'], line=C['LGRAY'], icon_h=1.0, limit=CB_L, bold=False, fill=C['WHITE'], cite=None):
     """T7 卡片：顶部图标（来自同一张图标组图的等分裁切），下方原文。"""
+    limit = _lim(x, w, limit)
     g = group(sl.shapes, 'CARD')
+    if cite:
+        textbox(g.shapes, x + w - PAD - cite_w(cite), y + h - 0.30, cite_w(cite), 0.22, [P(cite)], 12, color=line, align='r', pitch=1.2, name='CITE')
     rrect(g.shapes, x, y, w, h, fill=fill, line=line)
     if icon:
         picture(g.shapes, img(icon), x + (w - icon_h) / 2, y + PAD, icon_h, icon_h, rounded=False, name='NEWIMG_ICON')
@@ -236,7 +248,7 @@ def pack(ctx, sl, blocks, x, w, ncols, sz, top=CT, right_edge=True, breaks=None,
     if breaks is None and ncols > 1:          # 枚举所有连续分组，取最大越界最小者
         import itertools
         n = len(blocks)
-        lims = [(CB_R if (right_edge and c == ncols - 1) else CB_L) for c in range(ncols)]
+        lims = [_lim(xs[c], ws[c], CB_R if (right_edge and c == ncols - 1) else CB_L) for c in range(ncols)]
         hc = [[b.h(ws[c], sz) for b in blocks] for c in range(ncols)]
         best = None
         for cuts in itertools.combinations(range(1, n), ncols - 1):
@@ -260,7 +272,7 @@ def pack(ctx, sl, blocks, x, w, ncols, sz, top=CT, right_edge=True, breaks=None,
         auto = breaks is None and ci < ncols - 1 and y > top and (y - top + hb / 2 > target)
         if (must or auto) and ci < ncols - 1:
             ci += 1; y = top
-        lim = CB_R if (right_edge and ci == ncols - 1) else CB_L
+        lim = _lim(xs[ci], ws[ci], CB_R if (right_edge and ci == ncols - 1) else CB_L)
         hh = b.draw(ctx, sl, xs[ci], y, ws[ci], sz, lim)
         y += hh + gap
         bottoms[ci] = y - gap
