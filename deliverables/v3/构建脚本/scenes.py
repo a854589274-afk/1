@@ -655,6 +655,46 @@ def s407c():
             s.analyzer(x, 230, 150, 200, 'tea' if i == 0 else 'nav')
     return s
 
+
+@reg('407_hero_w', '16:9', 'front view of three identical analyzers standing in a straight row, a single teal horizontal line passing through all three at the same height, clean white background, symmetrical')
+def s407hw():
+    s = S(1600, 900); s.floor(720)
+    s.add('<line x1="820" y1="520" x2="1560" y2="520" stroke="#148F8A" stroke-width="16" opacity="0.18" filter="url(#glow)"/>')
+    s.add('<line x1="820" y1="520" x2="1560" y2="520" stroke="#148F8A" stroke-width="4"/>')
+    for x in (850, 1085, 1320):
+        s.analyzer(x, 380, 215, 340, 'nav' if x != 1085 else 'tea')
+    for x in (1065, 1300):
+        s.add(f'<circle cx="{x+2}" cy="520" r="9" fill="#148F8A"/><circle cx="{x+2}" cy="520" r="4" fill="#FFFFFF"/>')
+    return s
+
+@reg('18_1w', '16:9', 'front view of concentric precision measurement rings and a straight scale, perfectly centered, clean white background, navy and teal lines')
+def s18w():
+    s = S(1600, 900)
+    cx, cy = 1150, 450
+    for i, r in enumerate([330, 260, 190, 120]):
+        s.add(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#B9C7DA" stroke-width="{10-i*2}"/>')
+    for k in range(36):
+        a = k * math.pi / 18
+        s.add(f'<line x1="{cx+316*math.cos(a):.1f}" y1="{cy+316*math.sin(a):.1f}" x2="{cx+344*math.cos(a):.1f}" y2="{cy+344*math.sin(a):.1f}" stroke="#5B7FA8" stroke-width="3"/>')
+    s.add(f'<circle cx="{cx}" cy="{cy}" r="190" fill="none" stroke="#148F8A" stroke-width="4"/>')
+    s.add(f'<line x1="{cx-380}" y1="{cy}" x2="{cx+380}" y2="{cy}" stroke="#1F3A5F" stroke-width="4"/>')
+    for k in range(-8, 9):
+        h = 26 if k % 4 == 0 else 14
+        s.add(f'<line x1="{cx+k*45}" y1="{cy-h}" x2="{cx+k*45}" y2="{cy+h}" stroke="#1F3A5F" stroke-width="3"/>')
+    s.add(f'<circle cx="{cx}" cy="{cy}" r="12" fill="#E8833A"/><circle cx="{cx}" cy="{cy}" r="5" fill="#FFFFFF"/>')
+    return s
+
+@reg('40_1r', '16:9', 'three identical pillars of light standing in a row at the far right, front view, softly lit analyzers behind them, navy background, symmetrical and calm')
+def s40r():
+    s = S(1600, 900, 'navy'); s.floor(700)
+    for x in (1365, 1475):
+        s.add('<g opacity="0.35">'); s.analyzer(x - 55, 560, 110, 140, 'nav'); s.add('</g>')
+    for x in (1370, 1460, 1550):
+        s.add(f'<rect x="{x-30}" y="120" width="60" height="580" rx="30" fill="#7FF0E8" opacity="0.22" filter="url(#glow2)"/>')
+        s.add(f'<rect x="{x-14}" y="140" width="28" height="560" rx="14" fill="url(#beamV)"/>')
+        s.add(f'<rect x="{x-4}" y="150" width="8" height="550" rx="4" fill="#FFFFFF" opacity="0.8"/>')
+    return s
+
 # ---------- 角图版本：把 2:3 / 1:1 示例图嵌入 16:10 画布（背景与地面线无缝延展） ----------
 import re as _re
 def _cornerize(name):
