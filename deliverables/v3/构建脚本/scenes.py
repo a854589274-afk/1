@@ -614,6 +614,47 @@ def s21b():
     s.magnifier(300, 200, 95)
     return s
 
+
+@reg('407_hero', '16:9', 'front view of three identical analyzers standing in a straight row, a single glowing teal horizontal line passing through all three at the same height, navy background, symmetrical')
+def s407h():
+    s = S(1600, 900, 'navy'); s.floor(720)
+    s.add('<ellipse cx="1180" cy="460" rx="420" ry="260" fill="#2E5482" opacity="0.35" filter="url(#glow2)"/>')
+    s.glow_line(820, 520, 1560, 520, 4)
+    for x in (850, 1085, 1320):
+        s.analyzer(x, 380, 215, 340, 'nav' if x != 1085 else 'tea')
+    for x in (1065, 1300):
+        s.glow_dot(x + 2, 520, 8)
+    return s
+
+@reg('407_scope', '16:10', 'front elevation of one hospital laboratory building with a row of identical analyzers on a bench in front of it, symmetrical')
+def s407a():
+    s = S(800, 500); s.floor(440)
+    s.building(250, 70, 300, 250, 'nav', 4, 5)
+    s.shadow(400, 440, 600)
+    s.rr(110, 330, 580, 18, 6, 'url(#cerS)', '#B8C3CF', 1.2)
+    for i, x in enumerate((130, 270, 410, 550)):
+        s.analyzer(x, 350, 120, 90, 'tea' if i % 2 else 'nav', tray=False)
+    return s
+
+@reg('407_sample', '16:10', 'front view of a rack of patient serum tubes at two concentration levels, light and darker serum, with one proficiency-testing vial set slightly apart, symmetrical')
+def s407b():
+    s = S(800, 500); s.floor(440)
+    s.rack(130, 390, 540, 50)
+    for i in range(6):
+        s.tube(165 + i * 85, 170, 46, 230, 'nav' if i < 3 else 'tea', '#F6E7B5' if i < 3 else '#D9A441', 0.6)
+    return s
+
+@reg('407_rbc', '16:10', 'front view of four hematology analyzers in a straight row, the second one softly dimmed with a thin orange outline, symmetrical')
+def s407c():
+    s = S(800, 500); s.floor(430)
+    for i, x in enumerate((40, 230, 420, 610)):
+        if i == 1:
+            s.add(f'<rect x="{x-8}" y="{222}" width="166" height="216" rx="12" fill="none" stroke="#E8833A" stroke-width="4"/>')
+            s.add('<g opacity="0.45">'); s.analyzer(x, 230, 150, 200, 'nav'); s.add('</g>')
+        else:
+            s.analyzer(x, 230, 150, 200, 'tea' if i == 0 else 'nav')
+    return s
+
 # ---------- 角图版本：把 2:3 / 1:1 示例图嵌入 16:10 画布（背景与地面线无缝延展） ----------
 import re as _re
 def _cornerize(name):
